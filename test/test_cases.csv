@@ -1,0 +1,11 @@
+TestID,Requirement,Scenario,InputSequence,ExpectedStatus,ExpectedHealth,ExpectedCount,ExpectedLostLogs,ExpectedRestoredLogs
+TC-001,FR-001,Construction defaults,,UNKNOWN,NOT_AVAILABLE,0,0,0
+TC-002,FR-002,First UP update becomes HEALTHY,UP,UP,HEALTHY,0,0,0
+TC-003,FR-003,UP to DOWN increments and logs Lost,UP|DOWN,DOWN,UNHEALTHY,1,1,0
+TC-004,FR-004,Repeated DOWN does not increment,UP|DOWN|DOWN|DOWN,DOWN,UNHEALTHY,1,1,0
+TC-005,FR-005,DOWN to UP preserves counter and logs Restored,UP|DOWN|UP,UP,HEALTHY,1,1,1
+TC-006,FR-006,Latest health after mixed transitions,UP|DOWN|UP,UP,HEALTHY,1,1,1
+TC-007,FR-007,Three UP-DOWN transitions,UP|DOWN|UP|DOWN|UP|DOWN,DOWN,UNHEALTHY,3,3,2
+TC-008,FR-008,Reset clears counter and preserves state,UP|DOWN|RESET,DOWN,UNHEALTHY,0,1,0
+TC-009,FR-009,Counter saturates at UINT32_MAX,,DOWN,UNHEALTHY,4294967295,1,0
+TC-010,FR-003+FR-005,Five loss/recovery cycles ending UP,UP|DOWN|UP|DOWN|UP|DOWN|UP|DOWN|UP|DOWN|UP,UP,HEALTHY,5,5,5

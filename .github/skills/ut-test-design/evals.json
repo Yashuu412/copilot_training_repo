@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "skill": "ut-test-design",
+  "description": "Lightweight eval suite for the ut-test-design skill. Each eval feeds a prompt to the skill and checks the output against `expected` criteria (substring matches, forbidden tokens, and required TEST() names). Not a Waza suite — designed for hand-run review or a simple runner.",
+  "version": "1.0",
+  "evals": [
+    {
+      "id": "eval-001",
+      "name": "FR001_ConstructionDefaults",
+      "prompt": "Generate the GoogleTest TEST() for TC-001 / FR-001 (construction defaults). Assert status UNKNOWN, health NOT_AVAILABLE, failure count 0, and no log messages.",
+      "expected": {
+        "must_contain": [
+          "TEST(NetworkHealthMonitorTest, FR001_",
+          "NetworkStatus::UNKNOWN",
+          "NetworkHealth::NOT_AVAILABLE",
+          "GetFailureCount()",
+          "MockLogger"
+        ],
+        "must_not_contain": [
+          "ConsoleLogger",
+          "std::cout",
+          "std::cerr",
+          "sleep",
+          "std::thread"
+        ]
+      }
+    },
+    {
+      "id": "eval-002",
+      "name": "FR002_FirstUpBecomesHealthy",
+      "prompt": "Generate the GoogleTest TEST() for TC-002 / FR-002. Input sequence: UP. Expect status UP, health HEALTHY, counter 0, no logs.",
+      "expected": {
+        "must_contain": [
+          "TEST(NetworkHealthMonitorTest, FR002_",
+          "UpdateStatus(NetworkStatus::UP)",
+          "NetworkHealth::HEALTHY"
+        ],
+        "must_not_contain": [
+          "Communication Lost",
+          "Communication Restored",
+          "ConsoleLogger"
+        ]
+      }
+    },
+    {
+      "id": "eval-003",
+      "name": "FR003_UpToDownIncrementsAndLogsLost",
+      "prompt": "Generate the GoogleTest TEST() for TC-003 / FR-003. Input sequence: UP -> DOWN. Expect status DOWN, health UNHEALTHY, counter 1, one Communication Lost log.",
+      "expected": {
+        "must_contain": [
+          "TEST(NetworkHealthMonitorTest, FR003_",
+          "UpdateStatus(NetworkStatus::UP)",
+          "UpdateStatus(NetworkStatus::DOWN)",
+          "NetworkHealth::UNHEALTHY",
+          "GetFailureCount()",
+          "1U",
+          "::testing::Contains",
+          "Communication Lost"
+        ],
+        "must_not_contain": [
+          "Communication Restored",
+          "ConsoleLogger"
+        ]
+      }
+    },
+    {
+      "id": "eval-004",
+      "name": "FR004_RepeatedDownDoesNotIncrement",
+      "prompt": "Generate the GoogleTest TEST() for TC-004 / FR-004. Input sequence: UP -> DOWN -> DOWN -> DOWN. Counter must remain 1 after the extra DOWN updates.",
+      "expected": {
+        "must_contain": [
+          "TEST(NetworkHealthMonitorTest, FR004_",
+          "GetFailureCount()",
+          "1U"
+        ],
+        "must_not_contain": [
+          "2U",
+          "3U",
+          "ConsoleLogger"
+        ]
+      }
+    },
+    {
+      "id": "eval-005",
+      "name": "FR005_DownToUpPreservesCounterAndLogsRestored",
+      "prompt": "Generate the GoogleTest TEST() for TC-005 / FR-005. Input sequence: UP -> DOWN -> UP. Expect status UP, health HEALTHY, counter 1, both Communication Lost and Communication Restored logs present.",
+      "expected": {
+        "must_contain": [
+          "TEST(NetworkHealthMonitorTest, FR005_",
+          "NetworkHealth::HEALTHY",
+          "GetFailureCount()",
+          "1U",
+          "Communication Lost",
+          "Communication Restored"
+        ],
+        "must_not_contain": [
+          "ConsoleLogger",
+          "std::cout"
+        ]
+      }
+    },
+    {
+      "id": "eval-006",
+      "name": "FR009_CounterSaturatesAtUint32Max",
+      "prompt": "Generate the GoogleTest TEST() for TC-009 / FR-009 (counter saturates at UINT32_MAX). Pre-seed the counter to UINT32_MAX via NetworkHealthMonitorTestAccess, drive a UP -> DOWN transition, and assert the counter stays at UINT32_MAX (no wrap-around).",
+      "expected": {
+        "must_contain": [
+          "TEST(NetworkHealthMonitorTest, FR009_",
+          "NetworkHealthMonitorTestAccess",
+          "UINT32_MAX",
+          "GetFailureCount()"
+        ],
+        "must_not_contain": [
+          "0U",
+          "ConsoleLogger"
+        ]
+      }
+    },
+    {
+      "id": "eval-007",
+      "name": "Uses_MockLogger_Only",
+      "prompt": "Generate a TEST() covering FR-003. Confirm the skill never instantiates ConsoleLogger and never writes to std::cout/std::cerr.",
+      "expected": {
+        "must_contain": [
+          "MockLogger"
+        ],
+        "must_not_contain": [
+          "ConsoleLogger",
+          "std::cout",
+          "std::cerr",
+          "std::this_thread::sleep",
+          "std::thread"
+        ]
+      }
+    },
+    {
+      "id": "eval-008",
+      "name": "Rejects_Out_Of_Scope_Request",
+      "prompt": "Please refactor src/NetworkHealthMonitor.cpp to use a new logging backend.",
+      "expected": {
+        "must_contain": [
+          "out of scope"
+        ],
+        "must_not_contain": [
+          "```cpp",
+          "src/NetworkHealthMonitor.cpp"
+        ]
+      }
+    }
+  ]
+}

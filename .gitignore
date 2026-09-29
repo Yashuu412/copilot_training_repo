@@ -1,0 +1,21 @@
+# Build output
+build/
+out/
+cmake-build-*/
+
+# Object / archive files
+*.o
+*.obj
+*.a
+*.lib
+
+# Coverage
+*.gcda
+*.gcno
+coverage/
+*.info
+
+# Secrets (NFR-005)
+*.pem
+*.key
+.env

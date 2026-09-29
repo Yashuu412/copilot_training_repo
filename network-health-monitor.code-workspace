@@ -1,0 +1,140 @@
+{
+	// VS Code workspace tuned for reviewing the Network Communication Health
+	// Monitor unit tests (GoogleTest) and the test_cases.csv catalog.
+	// Authoritative spec: Doczzz/Requirement.md. Conventions: .github/copilot-instructions.md.
+	"folders": [
+		{
+			"name": "Network Health Monitor",
+			"path": "."
+		},
+		{
+			"name": "Tests",
+			"path": "test"
+		},
+		{
+			"name": "Requirements & Design",
+			"path": "Doczzz"
+		}
+	],
+	"settings": {
+		// --- C++ review ergonomics ---
+		"C_Cpp.default.cppStandard": "c++17",
+		"C_Cpp.default.includePath": [
+			"${workspaceFolder:Network Health Monitor}/include",
+			"${workspaceFolder:Network Health Monitor}/test"
+		],
+		"C_Cpp.default.compilerArgs": [
+			"-Wall",
+			"-Wextra",
+			"-Wpedantic"
+		],
+		"files.associations": {
+			"*.hpp": "cpp",
+			"*.tpp": "cpp"
+		},
+		"[cpp]": {
+			"editor.defaultFormatter": "ms-vscode.cpptools",
+			"editor.formatOnSave": true,
+			"editor.rulers": [
+				100
+			]
+		},
+		// --- TestMate C++: discover GoogleTest binaries produced by CMake ---
+		"testMate.cpp.test.executables": "{build,Build,out}/**/*{test,Test,TEST}*",
+		"testMate.cpp.test.workingDirectory": "${workspaceFolder:Network Health Monitor}",
+		// --- Python: validator + its self-contained unit tests ---
+		"python.testing.unittestEnabled": true,
+		"python.testing.pytestEnabled": false,
+		"python.testing.unittestArgs": [
+			"-v",
+			"-s",
+			"${workspaceFolder:Network Health Monitor}/.github/skills/ut-test-design/scripts",
+			"-p",
+			"test_*.py"
+		],
+		// --- Keep the review view focused: hide build/coverage artifacts ---
+		"files.exclude": {
+			"**/build": true,
+			"**/*.o": true,
+			"**/*.a": true,
+			"**/coverage": true,
+			"**/*.gcda": true,
+			"**/*.gcno": true
+		},
+		"search.exclude": {
+			"**/build": true,
+			"**/coverage": true
+		},
+		"files.trimTrailingWhitespace": true,
+		"files.insertFinalNewline": true
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools-extension-pack",
+			"ms-vscode.cmake-tools",
+			"matepek.vscode-catch2-test-adapter",
+			"ms-python.python",
+			"ms-vscode.vscode-chat-customizations-evaluations"
+		]
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "UT: validate test_cases.csv",
+				"type": "shell",
+				"command": "python",
+				"args": [
+					".github/skills/ut-test-design/scripts/validate_test_cases_csv.py",
+					"test/test_cases.csv"
+				],
+				"options": {
+					"cwd": "${workspaceFolder:Network Health Monitor}"
+				},
+				"problemMatcher": [],
+				"presentation": {
+					"reveal": "always",
+					"panel": "shared"
+				}
+			},
+			{
+				"label": "UT: fix test_cases.csv",
+				"type": "shell",
+				"command": "python",
+				"args": [
+					".github/skills/ut-test-design/scripts/validate_test_cases_csv.py",
+					"test/test_cases.csv",
+					"--fix"
+				],
+				"options": {
+					"cwd": "${workspaceFolder:Network Health Monitor}"
+				},
+				"problemMatcher": [],
+				"presentation": {
+					"reveal": "always",
+					"panel": "shared"
+				}
+			},
+			{
+				"label": "UT: run CSV validator tests",
+				"type": "shell",
+				"command": "python",
+				"args": [
+					"-m",
+					"unittest",
+					".github/skills/ut-test-design/scripts/test_validate_test_cases.py",
+					"-v"
+				],
+				"options": {
+					"cwd": "${workspaceFolder:Network Health Monitor}"
+				},
+				"group": "test",
+				"problemMatcher": [],
+				"presentation": {
+					"reveal": "always",
+					"panel": "shared"
+				}
+			}
+		]
+	}
+}
