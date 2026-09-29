@@ -21,4 +21,6 @@ target_link_libraries(network_health_monitor_tests PRIVATE
 )
 
 include(GoogleTest)
-gtest_discover_tests(network_health_monitor_tests)
+gtest_discover_tests(network_health_monitor_tests
+    PROPERTIES ENVIRONMENT "NHM_TEST_CSV=${CMAKE_CURRENT_SOURCE_DIR}/test_cases.csv"
+)

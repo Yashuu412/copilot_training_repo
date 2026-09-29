@@ -26,15 +26,15 @@ namespace {
 constexpr const char *kLostMessage = "Communication Lost";
 constexpr const char *kRestoredMessage = "Communication Restored";
 
-// Test-only accessor. Requires `friend struct NetworkHealthMonitorTestAccess;`
-// inside NetworkHealthMonitor.
+} // namespace
+
+// Test-only accessor. Must live in the global namespace to match the
+// `friend struct NetworkHealthMonitorTestAccess;` declared inside NetworkHealthMonitor.
 struct NetworkHealthMonitorTestAccess {
     static void SetFailureCount(NetworkHealthMonitor &m, std::uint32_t value) {
         m.failureCount_ = value;
     }
 };
-
-} // namespace
 
 // ---------------------------------------------------------------------------
 // TC-001 / FR-001 — construction defaults
